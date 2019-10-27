@@ -10,7 +10,8 @@ export default class App extends Component {
     this.state = {
       address: "",
       ac: null,
-      shouldHide: true
+      shouldHide: true,
+      getRequest: {}
     };
   }
 
@@ -42,12 +43,20 @@ export default class App extends Component {
 
   componentDidMount = (event) => {
     this.initAutocomplete();
+  }
+
+  onChange = (event) => {
+    this.setState({ address: event.target.value });
+  }
+
+  showLetter = () => {
     const db = firebase.firestore();
     var docRef = db.collection("voters").doc("voter1");
 
-    docRef.get().then(function(doc) {
+    docRef.get().then((doc) => {
         if (doc.exists) {
             console.log("Document data:", doc.data());
+            this.setState({ shouldHide: false, getRequest: doc.data() });
         } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
@@ -57,24 +66,18 @@ export default class App extends Component {
     });
   }
 
-  onChange = (event) => {
-    this.setState({ address: event.target.value });
-  }
-
   onSubmit = (event) => {
     event.preventDefault();
     console.log("submit called");
     if (this.state.ac) {
       let place = this.state.ac.getPlace();
-      console.log("From state" + this.state.addres);
-      console.log("From address" + this.state.addres);
       if (!place.geometry || place.formatted_address !== this.state.address) {
         console.log('Bad address ' + place.name);
         return;
       } else {
         console.log("Good address!");
-        let shouldHide = this.state.shouldHide;
-        this.setState({ shouldHide: !shouldHide });
+
+        this.showLetter();
       }
     } else {
       console.log("bad address!");
@@ -87,10 +90,8 @@ export default class App extends Component {
   }
 
   render() {
-    const shouldHide = this.state.shouldHide;
     return (
       <div>
-
         <div className="searchHeader" align="center">
           <h1>test</h1>
           <p className="lead">Input address which will show you certain things </p>
@@ -103,9 +104,9 @@ export default class App extends Component {
             </div>
           </form>
         </div>
-        <div style={{ display: (shouldHide ? 'none' : 'block') }} className="background">
+        <div style={{ display: (this.state.shouldHide ? 'none' : 'block') }} className="background">
           
-            <Letter />
+            <Letter hasTable={this.state.shouldHide} />
         </div>
       </div>
 

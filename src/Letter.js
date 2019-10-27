@@ -11,10 +11,16 @@ export default class Letter extends Component {
 		today = mm + '/' + dd + '/' + yyyy;
 		return today;
 	}
+	createTable = (event) => {
+		if(!this.props.hasTable) {
+			
+		}
+	}
 
 	render() {
-		return (
+		this.createTable();
 
+		return (
 			<div className="letter container">
 				<div className="sender">
 					<p>Name</p>
