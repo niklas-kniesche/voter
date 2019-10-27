@@ -100,7 +100,7 @@ export default class App extends Component {
       <div>
         <div className="searchHeader" align="center">
           <h1>NeighborVote</h1>
-          <p className="lead">Input your address to generate a letter. </p>
+          <p className="lead">Generate the best letter to encourage your neighbors to vote. </p>
           <form onSubmit={this.onSubmit}>
             <div className="input-group col-sm-8 col-sm-offset-2">
               <input value={this.state.address} onChange={this.onChange} id="searchTextField" type="text" className="form-control" placeholder="Your Connecticut address" aria-label="Recipient's username" aria-describedby="basic-addon2"></input>
@@ -113,6 +113,15 @@ export default class App extends Component {
         <div style={{ display: (this.state.shouldHide ? 'none' : 'block') }} className="background">
           
             <Letter hasTable={this.state.shouldHide} getRequest={this.state.getRequest}/>
+        </div>
+        <div className="container explanation">
+        <div>
+          This project was inspired by a <a href="https://www.cambridge.org/core/journals/american-political-science-review/article/social-pressure-and-voter-turnout-evidence-from-a-largescale-field-experiment/11E84AF4C0B7FBD1D20C855972C2C3EB/share/fc0b0621ae1604b66e5589a3fa180c39dec185fb">paper</a> published in the American Political 
+          Science Review by Alan S. Gerber, Donald P. Green and Christopher W. Larimer. 
+          The paper is about a study that found that mailing neighborhood voting data to 
+          individuals in a community significantly increases voter turnout, by about 8%. We 
+          sought to apply this effect to the real world. Connecticut voter files from <a href="https://connvoters.com/">connvoters.com</a>. 
+        </div>
         </div>
       </div>
 
