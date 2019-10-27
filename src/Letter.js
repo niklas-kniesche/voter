@@ -37,7 +37,7 @@ export default class Letter extends Component {
 					<p>What if your neighbors knew if you voted or not?</p>
 					<p>Why do so many people fail to vote? We've been talking about the problem for years, but it only seems to get worse. This year, we're taking a new approach. We're sending this mailing to you and your neighbors to publicize who does and does not vote.</p>
 					<p> The chart shows the names of some of your neighbors, showing which have voted in
- 						the past. After the August 8 election, we intend to mail an updated chart. You
+ 						the past. After the next election, we intend to mail an updated chart. You
  						and your neighbors will all know who voted and who did not.
 					</p>
 				</div>
