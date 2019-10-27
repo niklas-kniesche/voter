@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Tinos&display=swap');
+
+.background .letter {
+	padding-top: 2em;
+	background-color: #f5f5f5;
+	padding: 3em 2em;
+	font-family: "Tinos", serif;
+}
+@media (min-width: 1200px) {
+	.background .letter {
+	    max-width: 960px;
+	    padding-left: 3em;
+	    padding-right: 3em;
+	}
+}
+
+.sender {
+	width:100%;
+	text-align: right;
+}
+.sender > p {
+	margin-bottom: 0;
+}
+
+.recipient > p{
+	margin-bottom: 0;
+}
+.main-text {
+	margin-top: 2em;
+}
