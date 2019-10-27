@@ -50,6 +50,7 @@ export default class App extends Component {
   }
 
   showLetter = (street, city) => {
+    console.log(city);
     const db = firebase.firestore();
     let citiesRef = db.collection('voters');
     let arr = []
