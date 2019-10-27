@@ -13,13 +13,13 @@ export default class Letter extends Component {
 	}
 	createTable = (event) => {
 		if(!this.props.hasTable) {
-			
+
 		}
 	}
 
 	render() {
 		this.createTable();
-
+		let person = this.props.getRequest;
 		return (
 			<div className="letter container">
 				<div className="sender">

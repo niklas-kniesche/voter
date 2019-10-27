@@ -106,7 +106,7 @@ export default class App extends Component {
         </div>
         <div style={{ display: (this.state.shouldHide ? 'none' : 'block') }} className="background">
           
-            <Letter hasTable={this.state.shouldHide} />
+            <Letter hasTable={this.state.shouldHide} getRequest={this.state.getRequest}/>
         </div>
       </div>
 
