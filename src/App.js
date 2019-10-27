@@ -11,7 +11,7 @@ export default class App extends Component {
       address: "",
       ac: null,
       shouldHide: true,
-      getRequest: {}
+      getRequest: []
     };
   }
 
@@ -49,21 +49,27 @@ export default class App extends Component {
     this.setState({ address: event.target.value });
   }
 
-  showLetter = () => {
+  showLetter = (street, city) => {
     const db = firebase.firestore();
-    var docRef = db.collection("voters").doc("voter1");
-
-    docRef.get().then((doc) => {
-        if (doc.exists) {
-            console.log("Document data:", doc.data());
-            this.setState({ shouldHide: false, getRequest: doc.data() });
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
+    let citiesRef = db.collection('voters');
+    let arr = []
+    let query = citiesRef.where('Voter Address Street', '==', street).where('Voter City', '==', city).get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          console.log('No matching documents.');
+          return;
         }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
-    });
+        snapshot.forEach(doc => {
+
+          arr.push(doc.data());
+          this.setState({ shouldHide: false, getRequest: arr });
+          // console.log(doc.id, '=>', doc.data());
+        });
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
+      console.log(arr);
   }
 
   onSubmit = (event) => {
@@ -77,7 +83,7 @@ export default class App extends Component {
       } else {
         console.log("Good address!");
 
-        this.showLetter();
+        this.showLetter(place.address_components[0].long_name, place.address_components[1].long_name);
       }
     } else {
       console.log("bad address!");
@@ -93,11 +99,11 @@ export default class App extends Component {
     return (
       <div>
         <div className="searchHeader" align="center">
-          <h1>test</h1>
-          <p className="lead">Input address which will show you certain things </p>
+          <h1>NeighborVote</h1>
+          <p className="lead">Input your address to generate a letter. </p>
           <form onSubmit={this.onSubmit}>
             <div className="input-group col-sm-8 col-sm-offset-2">
-              <input value={this.state.address} onChange={this.onChange} id="searchTextField" type="text" className="form-control" placeholder="Enter your Connecticut address" aria-label="Recipient's username" aria-describedby="basic-addon2"></input>
+              <input value={this.state.address} onChange={this.onChange} id="searchTextField" type="text" className="form-control" placeholder="Your Connecticut address" aria-label="Recipient's username" aria-describedby="basic-addon2"></input>
               <div className="input-group-append">
                 <button className="btn btn-outline-secondary" type="submit">Submit</button>
               </div>

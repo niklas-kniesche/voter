@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './Letter.css';
+import Table from "./Table";
 
 export default class Letter extends Component {
 	getDate = (event) => {
@@ -23,19 +24,13 @@ export default class Letter extends Component {
 		return (
 			<div className="letter container">
 				<div className="sender">
-					<p>Name</p>
-					<p>Address</p>
-					<p>City, State, Zip Code</p>
-					<p>person@website.com</p>
+					<p>NeighborVote</p>
 				</div>
 
 				<p>{this.getDate()}</p>
 
 				<div className="recipient">
-					<p>Name</p>
-					<p>Address</p>
-					<p>City, State, Zip Code</p>
-					<p>person@website.com</p>
+
 				</div>
 				<div className="main-text">
 					<p>Dear Registered Voter: </p>
@@ -45,6 +40,9 @@ export default class Letter extends Component {
  						the past. After the August 8 election, we intend to mail an updated chart. You
  						and your neighbors will all know who voted and who did not.
 					</p>
+				</div>
+				<div className="table-wrapper" >
+					<Table getRequest={this.props.getRequest}/>
 				</div>
 			</div>
 		);
