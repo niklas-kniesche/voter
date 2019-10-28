@@ -32,7 +32,7 @@ export default class App extends Component {
   }
 
   initAutocomplete = (event) => {
-    this.autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchTextField'), 
+    this.autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchTextField'),
       {types: ['address']
 
     });
@@ -52,9 +52,22 @@ export default class App extends Component {
   showLetter = (street, city) => {
     console.log(city);
     const db = firebase.firestore();
-    let citiesRef = db.collection('voters');
+    let votersRef = db.collection('voters');
     let arr = []
-    let query = citiesRef.where('Voter Address Street', '==', street).where('Voter City', '==', city).get()
+    function address_number(x, range){
+      let pair = []
+      pair.push(Math.max(0, x-range))
+      pair.push(parseInt(x+range))
+      return pair
+    }
+    let address_range = address_number(200, 10) //placeholder for actual street address number
+    console.log(address_range)
+    let query = votersRef.where(
+      'Voter Address Street', '==', street).where(
+        'Voter City', '==', city).where(
+          'Voter Address Number', '>=', (""+address_range[0])).where(
+            'Voter Address Number', '<=', (""+address_range[1])
+          ).get()
       .then(snapshot => {
         if (snapshot.empty) {
           console.log('No matching documents.');
@@ -89,7 +102,7 @@ export default class App extends Component {
     } else {
       console.log("bad address!");
     }
-    
+
     this.setState({
       address: "",
     });
@@ -112,15 +125,15 @@ export default class App extends Component {
           </form>
         </div>
         <div style={{ display: (this.state.shouldHide ? 'none' : 'block') }} className="background">
-          
+
             <Letter hasTable={this.state.shouldHide} getRequest={this.state.getRequest}/>
         </div>
         <div className="container explanation">
         <div>
-          This project was inspired by a <a href="https://www.cambridge.org/core/journals/american-political-science-review/article/social-pressure-and-voter-turnout-evidence-from-a-largescale-field-experiment/11E84AF4C0B7FBD1D20C855972C2C3EB/share/fc0b0621ae1604b66e5589a3fa180c39dec185fb">paper</a> published in the American Political 
-          Science Review by Alan S. Gerber, Donald P. Green and Christopher W. Larimer. 
-          This study that found that mailing people the voting records of their neighbors significantly increases voter turnout, by about 8%. We 
-          sought to apply this so that anyone could increase the political participation of people around them using this method. Connecticut voter files from <a href="https://connvoters.com/">connvoters.com</a>. 
+          This project was inspired by a <a href="https://www.cambridge.org/core/journals/american-political-science-review/article/social-pressure-and-voter-turnout-evidence-from-a-largescale-field-experiment/11E84AF4C0B7FBD1D20C855972C2C3EB/share/fc0b0621ae1604b66e5589a3fa180c39dec185fb">paper</a> published in the American Political
+          Science Review by Alan S. Gerber, Donald P. Green and Christopher W. Larimer.
+          This study that found that mailing people the voting records of their neighbors significantly increases voter turnout, by about 8%. We
+          sought to apply this so that anyone could increase the political participation of people around them using this method. Connecticut voter files from <a href="https://connvoters.com/">connvoters.com</a>.
         </div>
         </div>
       </div>
