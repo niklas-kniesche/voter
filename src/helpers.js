@@ -9,3 +9,10 @@ export function address_number(x, range){
 export function between(val, min, max) {
   return val >= min && val <= max;
 }
+
+export function findCity(address) {
+	let cityIndex = address.findIndex((field) => {
+		return field.types[0] === "locality";
+	});
+	return address[cityIndex].long_name;
+}

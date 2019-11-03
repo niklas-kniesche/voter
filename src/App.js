@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Letter from "./Letter";
 import './App.css';
 import firebase from './firebase.js';
-import {address_number, between} from './helpers';
+import {address_number, between, findCity} from './helpers';
 
 export default class App extends Component {
   constructor(props) {
@@ -49,7 +49,7 @@ export default class App extends Component {
   showStreetLetter = (data) => {
     let street = data[0]
     let city = data[1]
-    console.log("city: " + city);
+    console.log("city: " + city + " street: " + street );
     const db = firebase.firestore();
     let votersRef = db.collection('voters');
     let arr = []
@@ -78,7 +78,7 @@ export default class App extends Component {
       let number = data[0]
       let street = data[1]
       let city = data[2]
-      console.log("city: " + city);
+      console.log("city: " + city + " street: " + street + " number: " + number);
       const db = firebase.firestore();
       let votersRef = db.collection('voters');
       let records = [];
@@ -89,12 +89,10 @@ export default class App extends Component {
       console.log(address_range);
       let query = votersRef
             .where('Voter Address Street', '==', street)
-            .where('Voter City', '==', city)
-            .where('Voter Address Number', '>=', (""+address_range[0]))
-            .where('Voter Address Number', '<=', (""+address_range[1])).get()
+            .where('Voter City', '==', city).get()
         .then(snapshot => {
           if (snapshot.empty) {
-            console.log('No matching documents.');
+            console.log('No matching documents. -- address search');
             return;
           }
           snapshot.forEach((doc) => {
@@ -111,7 +109,7 @@ export default class App extends Component {
         .catch(err => {
           console.log('Error getting documents', err);
         });
-        console.log(records);
+        
   }
 
     onSubmit = (event) => {
@@ -127,7 +125,7 @@ export default class App extends Component {
           console.log(place.address_components);
           if (place.address_components[0].types[0] === "street_number") {
             console.log("you entered a full address!")
-            let newarr = [place.address_components[0].long_name, place.address_components[1].long_name, place.address_components[3].long_name];
+            let newarr = [place.address_components[0].long_name, place.address_components[1].long_name, findCity(place.address_components)];
             this.showAddressLetter(newarr);
           }
           else if (place.address_components[0].types[0] === "route") {
