@@ -39,6 +39,7 @@
   width: 100%;
   background-color: #484132;
   padding-top: 3em;
+  padding-bottom: 2em;
     -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
        -moz-animation: fadein 2s; /* Firefox < 16 */
         -ms-animation: fadein 2s; /* Internet Explorer */
@@ -68,4 +69,6 @@
 .explanation {
   max-width: 800px;
   font-family: 'Tinos', serif;
+  padding-top: 2em;
+  margin-bottom: 3em;
 }

@@ -52,7 +52,7 @@ export default class App extends Component {
     console.log("city: " + city + " street: " + street );
     const db = firebase.firestore();
     let votersRef = db.collection('voters');
-    let arr = []
+    let arr = [];
 
     let query = votersRef.where(
       'Voter Address Street', '==', street).where(
@@ -130,8 +130,8 @@ export default class App extends Component {
           }
           else if (place.address_components[0].types[0] === "route") {
             console.log("you entered a street name!");
-            let newarr = [place.address_components[0].long_name, place.address_components[1].long_name];
-            this.showStreetLetter(newarr)
+            let newarr = [place.address_components[0].long_name, findCity(place.address_components)];
+            this.showStreetLetter(newarr);
           }
           else {
             console.log("you entered a street, please enter a full address!");
