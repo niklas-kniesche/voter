@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Letter from "./Letter";
 import './App.css';
 import firebase from './firebase.js';
+import {address_number, between} from './helpers';
 
 export default class App extends Component {
   constructor(props) {
@@ -20,9 +21,6 @@ export default class App extends Component {
     let place = this.autocomplete.getPlace();
     this.setState({ac: this.autocomplete});
     if (!place.geometry) {
-      // User entered the name of a Place that was not suggested and
-      // pressed the Enter key, or the Place Details request failed.
-      // Do anything you like with what was entered in the ac field.
       console.log('You entered: ' + place.name);
       return;
     }
@@ -48,79 +46,72 @@ export default class App extends Component {
   onChange = (event) => {
     this.setState({ address: event.target.value });
   }
+  showStreetLetter = (data) => {
+    let street = data[0]
+    let city = data[1]
+    console.log("city: " + city);
+    const db = firebase.firestore();
+    let votersRef = db.collection('voters');
+    let arr = []
 
-  showLetter = (data) => {
-    // note: now being passed array of either size 3 or 2, full address or just street
-    if(data.length === 3){
+    let query = votersRef.where(
+      'Voter Address Street', '==', street).where(
+        'Voter City', '==', city).get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          console.log('No matching documents.');
+          return;
+        }
+        snapshot.forEach(doc => {
+          arr.push(doc.data());
+          this.setState({ shouldHide: false, getRequest: arr });
+          // console.log(doc.id, '=>', doc.data());
+        });
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
+      console.log(arr);
+  }
+  showAddressLetter = (data) => {
+      console.log("showAddressLetter called");
       let number = data[0]
       let street = data[1]
       let city = data[2]
       console.log("city: " + city);
       const db = firebase.firestore();
       let votersRef = db.collection('voters');
-      let arr = []
-      function address_number(x, range){
-        let pair = []
-        pair.push(Math.max(0, x-range))
-        pair.push(parseInt(x+range))
-        return pair
-      }
+      let records = [];
+
       //placeholder for actual street address number
-      let address_range = address_number(parseInt(number), 10)
+      let address_range = address_number(parseInt(number), 10);
 
-      console.log(address_range)
-      let query = votersRef.where(
-        'Voter Address Street', '==', street).where(
-          'Voter City', '==', city).where(
-            'Voter Address Number', '>=', (""+address_range[0])).where(
-              'Voter Address Number', '<=', (""+address_range[1])
-            ).get()
+      console.log(address_range);
+      let query = votersRef
+            .where('Voter Address Street', '==', street)
+            .where('Voter City', '==', city)
+            .where('Voter Address Number', '>=', (""+address_range[0]))
+            .where('Voter Address Number', '<=', (""+address_range[1])).get()
         .then(snapshot => {
           if (snapshot.empty) {
             console.log('No matching documents.');
             return;
           }
-          snapshot.forEach(doc => {
-            arr.push(doc.data());
-            this.setState({ shouldHide: false, getRequest: arr });
-            // console.log(doc.id, '=>', doc.data());
+          snapshot.forEach((doc) => {
+            records.push(doc.data());
           });
-        })
-        .catch(err => {
-          console.log('Error getting documents', err);
-        });
-        console.log(arr);
-      }
-    else if (data.length === 2) {
-      let street = data[0]
-      let city = data[1]
-      console.log("city: " + city);
-      const db = firebase.firestore();
-      let votersRef = db.collection('voters');
-      let arr = []
 
-      let query = votersRef.where(
-        'Voter Address Street', '==', street).where(
-          'Voter City', '==', city).get()
-        .then(snapshot => {
-          if (snapshot.empty) {
-            console.log('No matching documents.');
-            return;
-          }
-          snapshot.forEach(doc => {
-            arr.push(doc.data());
-            this.setState({ shouldHide: false, getRequest: arr });
-            // console.log(doc.id, '=>', doc.data());
+          records = records.filter((person) => {
+            let currentAddress = parseInt(person["Voter Address Number"]);
+            return between(currentAddress, address_range[0], address_range[1]);
           });
+
+          this.setState({ shouldHide: false, getRequest: records });
         })
         .catch(err => {
           console.log('Error getting documents', err);
         });
-        console.log(arr);
-    }
-    else{
-      console.log('Error getting documents')
-    }
+        console.log(records);
   }
 
     onSubmit = (event) => {
@@ -133,24 +124,19 @@ export default class App extends Component {
           return;
         } else {
           console.log("Good address!");
-          console.log(place.address_components)
-          if (place.address_components.length === 8) {
+          console.log(place.address_components);
+          if (place.address_components[0].types[0] === "street_number") {
             console.log("you entered a full address!")
-            let newarr = []
-            newarr.push(place.address_components[0].long_name)
-            newarr.push(place.address_components[1].long_name)
-            newarr.push(place.address_components[3].long_name)
-            this.showLetter(newarr)
+            let newarr = [place.address_components[0].long_name, place.address_components[1].long_name, place.address_components[3].long_name];
+            this.showAddressLetter(newarr);
           }
-          else if (place.address_components.length === 5) {
-            console.log("you entered a street name!")
-            let newarr = []
-            newarr.push(place.address_components[0].long_name)
-            newarr.push(place.address_components[1].long_name)
-            this.showLetter(newarr)
+          else if (place.address_components[0].types[0] === "route") {
+            console.log("you entered a street name!");
+            let newarr = [place.address_components[0].long_name, place.address_components[1].long_name];
+            this.showStreetLetter(newarr)
           }
           else {
-            console.log("you entered a street, please enter a full address!")
+            console.log("you entered a street, please enter a full address!");
           }
         }
       } else {
@@ -160,7 +146,7 @@ export default class App extends Component {
       this.setState({
         address: "",
       });
-      console.log("we set the state to stuff");
+      console.log("address state cleared");
     }
 
   render() {
