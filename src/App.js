@@ -12,7 +12,8 @@ export default class App extends Component {
       address: "",
       ac: null,
       shouldHide: true,
-      getRequest: []
+      getRequest: [],
+      message: "",
     };
   }
 
@@ -52,26 +53,30 @@ export default class App extends Component {
     console.log("city: " + city + " street: " + street );
     const db = firebase.firestore();
     let votersRef = db.collection('voters');
-    let arr = [];
+    let records = [];
 
     let query = votersRef.where(
       'Voter Address Street', '==', street).where(
         'Voter City', '==', city).get()
       .then(snapshot => {
         if (snapshot.empty) {
-          console.log('No matching documents.');
+          this.setState({
+            message: "No records found."
+          });
           return;
         }
+
         snapshot.forEach(doc => {
-          arr.push(doc.data());
-          this.setState({ shouldHide: false, getRequest: arr });
-          // console.log(doc.id, '=>', doc.data());
+          records.push(doc.data());
         });
+        this.setState({ 
+          shouldHide: false, 
+          getRequest: records,
+          message: records.length + " records found" });
       })
       .catch(err => {
         console.log('Error getting documents', err);
       });
-      console.log(arr);
   }
   showAddressLetter = (data) => {
       console.log("showAddressLetter called");
@@ -92,7 +97,9 @@ export default class App extends Component {
             .where('Voter City', '==', city).get()
         .then(snapshot => {
           if (snapshot.empty) {
-            console.log('No matching documents. -- address search');
+            this.setState({
+              message: "No records found."
+            });
             return;
           }
           snapshot.forEach((doc) => {
@@ -104,7 +111,10 @@ export default class App extends Component {
             return between(currentAddress, address_range[0], address_range[1]);
           });
 
-          this.setState({ shouldHide: false, getRequest: records });
+          this.setState({ 
+            shouldHide: false, 
+            getRequest: records,
+            message: records.length + " records found" });
         })
         .catch(err => {
           console.log('Error getting documents', err);
@@ -117,10 +127,10 @@ export default class App extends Component {
       console.log("submit called");
       if (this.state.ac) {
         let place = this.state.ac.getPlace();
-        if (!place.geometry || place.formatted_address !== this.state.address) {
-          console.log('Bad address ' + place.name);
+        if (!place.geometry) {
+          this.setState({message: "Invalid address"});
           return;
-        } else {
+        }  else {
           console.log("Good address!");
           console.log(place.address_components);
           if (place.address_components[0].types[0] === "street_number") {
@@ -133,18 +143,12 @@ export default class App extends Component {
             let newarr = [place.address_components[0].long_name, findCity(place.address_components)];
             this.showStreetLetter(newarr);
           }
-          else {
-            console.log("you entered a street, please enter a full address!");
-          }
         }
-      } else {
-        console.log("bad address!");
-      }
+      } 
 
       this.setState({
         address: "",
       });
-      console.log("address state cleared");
     }
 
   render() {
@@ -161,6 +165,7 @@ export default class App extends Component {
               </div>
             </div>
           </form>
+          <p>{this.state.message}</p>
         </div>
         <div style={{ display: (this.state.shouldHide ? 'none' : 'block') }} className="background">
 
