@@ -18,6 +18,9 @@
 .env.test.local
 .env.production.local
 
+public/index.html
+firebase.js
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
