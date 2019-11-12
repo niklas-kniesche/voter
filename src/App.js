@@ -173,7 +173,7 @@ export default class App extends Component {
         </div>
         <div className="container explanation">
         <div>
-          This project was inspired by a <a href="https://www.cambridge.org/core/journals/american-political-science-review/article/social-pressure-and-voter-turnout-evidence-from-a-largescale-field-experiment/11E84AF4C0B7FBD1D20C855972C2C3EB/share/fc0b0621ae1604b66e5589a3fa180c39dec185fb">paper</a> published in the American Political
+          This project was inspired by a <a href="https://isps.yale.edu/research/publications/isps08-001">paper</a> published in the American Political
           Science Review by Alan S. Gerber, Donald P. Green and Christopher W. Larimer.
           This study that found that mailing people the voting records of their neighbors significantly increases voter turnout, by about 8%. We
           sought to apply this so that anyone could increase the political participation of people around them using this method. Connecticut voter files from <a href="https://connvoters.com/">connvoters.com</a>.
